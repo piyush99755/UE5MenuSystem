@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "MenuSystemCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -56,6 +57,13 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	UFUNCTION(BlueprintCallable)
+		void OnCreateSession();
+
+
+	//callback function for delegate
+	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -64,6 +72,8 @@ public:
 
 	//this smart session ptr will hold our online session interface 
 	//it will useful to access online session funtions
-	 TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> OnlineSessionInterface;
+	IOnlineSessionPtr OnlineSessionInterface;
+
+	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
 };
 
