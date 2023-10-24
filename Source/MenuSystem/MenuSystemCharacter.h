@@ -58,11 +58,15 @@ protected:
 	// End of APawn interface
 
 	UFUNCTION(BlueprintCallable)
-		void OnCreateSession();
+		void CreateGameSession();
+
+	UFUNCTION(BlueprintCallable)
+		void JoinGameSession();
 
 
 	//callback function for delegate
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
+	void OnFindSessionsComplete(bool bWasSuccessful);
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -75,5 +79,8 @@ public:
 	IOnlineSessionPtr OnlineSessionInterface;
 
 	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
+	FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
+
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 };
 

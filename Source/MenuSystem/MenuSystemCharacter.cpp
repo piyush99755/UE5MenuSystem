@@ -15,7 +15,8 @@
 // AMenuSystemCharacter
 
 AMenuSystemCharacter::AMenuSystemCharacter():
-CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete))
+CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete)),
+FindSessionsCompleteDelegate(FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete))
 
 {
 	// Set size for collision capsule
@@ -94,7 +95,7 @@ void AMenuSystemCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 	PlayerInputComponent->BindTouch(IE_Released, this, &AMenuSystemCharacter::TouchStopped);
 }
 
-void AMenuSystemCharacter::OnCreateSession()
+void AMenuSystemCharacter::CreateGameSession()
 {
 	//check to see if OnlineSessionInterface is valid
 	if (!OnlineSessionInterface.IsValid())
@@ -119,6 +120,26 @@ void AMenuSystemCharacter::OnCreateSession()
 	OnlineSessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *SessionSettings);
 }
 
+void AMenuSystemCharacter::JoinGameSession()
+{
+	if (!OnlineSessionInterface.IsValid())
+	{
+		return;
+	}
+	OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionsCompleteDelegate);
+	//find game sessions
+	SessionSearch = MakeShareable(new (FOnlineSessionSearch));
+
+	//setting up session search settings
+	SessionSearch->MaxSearchResults = 10000;
+	SessionSearch->bIsLanQuery = false;
+	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+
+	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+	
+	OnlineSessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), SessionSearch.ToSharedRef()); 
+}
+
 void AMenuSystemCharacter::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
 	if (bWasSuccessful)
@@ -135,6 +156,22 @@ void AMenuSystemCharacter::OnCreateSessionComplete(FName SessionName, bool bWasS
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
 				FString::Printf(TEXT("Failed To Create Session")));
+		}
+	}
+}
+
+void AMenuSystemCharacter::OnFindSessionsComplete(bool bWasSuccessful)
+{
+	//loop through search results 
+	for (auto Result : SessionSearch->SearchResults)
+	{
+		auto Id = Result.GetSessionIdStr();
+		auto User = Result.Session.OwningUserName;
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black,
+				FString::Printf(TEXT("ID : %s, User : %s"), *Id, *User));
 		}
 	}
 }
