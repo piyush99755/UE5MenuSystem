@@ -67,6 +67,7 @@ protected:
 	//callback function for delegate
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	void OnFindSessionsComplete(bool bWasSuccessful);
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -80,6 +81,7 @@ public:
 
 	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
 	FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
+	FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
 
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 };
