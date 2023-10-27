@@ -18,4 +18,30 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void MenuSetup();
+
+protected:
+
+
+	virtual bool Initialize() override;
+
+private:
+
+	//specify special type of specifier to bind button to the widget class 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* JoinButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* HostButton;
+
+	//function to bind to the buttons
+
+	UFUNCTION()
+		void JoinButtonClicked();
+
+	UFUNCTION()
+		void HostButtonClicked();
+
+	//multiplayer sessions subsystem class to handle online sessions functionality
+	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+
 };

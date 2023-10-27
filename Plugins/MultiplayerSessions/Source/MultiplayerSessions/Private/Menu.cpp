@@ -2,6 +2,9 @@
 
 
 #include "Menu.h"
+#include "Components/Button.h"
+#include "OnlineSubsystem.h"
+#include "MultiplayerSessionsSubsystem.h"
 
 void UMenu::MenuSetup()
 {
@@ -9,14 +12,60 @@ void UMenu::MenuSetup()
 	AddToViewport();
 	SetVisibility(ESlateVisibility::Visible);
 	
-
-	//Set input mode for widget class
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController)
+	UWorld* World = GetWorld();
+	if (World)
 	{
-		FInputModeUIOnly InputDataMode;
-		InputDataMode.SetWidgetToFocus(TakeWidget());
-		InputDataMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		PlayerController->SetInputMode(InputDataMode);
+		//Set input mode for widget class
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+
+		if (PlayerController)
+		{
+			FInputModeUIOnly InputDataMode;
+			InputDataMode.SetWidgetToFocus(TakeWidget());
+			InputDataMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			PlayerController->SetInputMode(InputDataMode);
+		}
+	}
+
+	//get hold of reference of game instance, which will be using to get multiplayer sessions subsystem class 
+	UGameInstance* GameInstance = GetGameInstance();
+
+	if (GameInstance)
+	{
+		//getting sub system setting value of pointer MultiplayerSessionsSubsystem
+		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+	}
+
+	
+}
+
+bool UMenu::Initialize()
+{
+	if (!Super::Initialize())
+	{
+		return false;
+	}
+
+	//bind function to buttons
+	HostButton->OnClicked.AddDynamic(this, &ThisClass::HostButtonClicked);
+	JoinButton->OnClicked.AddDynamic(this, &ThisClass::JoinButtonClicked);
+
+	return true;
+	
+}
+
+void UMenu::JoinButtonClicked()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Join button clicked")));
+	}
+}
+
+void UMenu::HostButtonClicked()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Host button clicked")));
 	}
 }
