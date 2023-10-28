@@ -57,6 +57,10 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	{
 		//as Create Session function returns bool, need to check if its not true we remove delegate from delegate handle list
 		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
+
+		//broadcast own custom delegate
+		//passing value false when it failed to create session
+		MultiplayerCreateSessionComplete.Broadcast(false);
 	}
 	
 	
@@ -80,6 +84,14 @@ void UMultiplayerSessionsSubsystem::StartSession()
 
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	//action of creating session is completed at this point so removed delegate from delegate list
+	//broadcasting delegate is set to true by passing bWasSuccessful
+	if (SessionInterface)
+	{
+		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
+	}
+
+	MultiplayerCreateSessionComplete.Broadcast(bWasSuccessful);
 }
 
 void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)

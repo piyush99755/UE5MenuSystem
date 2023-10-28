@@ -29,6 +29,10 @@ protected:
 
 	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld);
 
+	//callback for custom delegate on MultiplayerSessionSubsystem
+    UFUNCTION()
+	void OnCreateSession(bool bWasSuccessful);
+
 private:
 
 	//specify special type of specifier to bind button to the widget class 
