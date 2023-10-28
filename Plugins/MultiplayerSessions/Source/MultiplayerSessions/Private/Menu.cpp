@@ -54,6 +54,27 @@ bool UMenu::Initialize()
 	
 }
 
+void UMenu::HostButtonClicked()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Host button clicked")));
+	}
+
+	//on host button clicked, create session and travel to lobby level
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->CreateSession(4, FString("FreeForAll"));
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			World->ServerTravel(FString("/Game/ThirdPerson/Maps/Lobby?listen"));
+		}
+	}
+	
+}
+
 void UMenu::JoinButtonClicked()
 {
 	if (GEngine)
@@ -62,10 +83,4 @@ void UMenu::JoinButtonClicked()
 	}
 }
 
-void UMenu::HostButtonClicked()
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Host button clicked")));
-	}
-}
+

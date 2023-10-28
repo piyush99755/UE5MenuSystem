@@ -43,6 +43,8 @@ private:
 
 	IOnlineSessionPtr SessionInterface;
 
+	TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
+
 	//delegates to add to the online session interface delegate list
 	//bind internal callbacks to these
 
