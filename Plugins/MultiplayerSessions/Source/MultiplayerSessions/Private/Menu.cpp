@@ -6,11 +6,15 @@
 #include "OnlineSubsystem.h"
 #include "MultiplayerSessionsSubsystem.h"
 
-void UMenu::MenuSetup()
+void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch)
 {
+	NumPublicConnections = NumberOfPublicConnections;
+	MatchType = TypeOfMatch;
+
 	//add widget to viewport and set its visibility
 	AddToViewport();
 	SetVisibility(ESlateVisibility::Visible);
+	bIsFocusable = true;
 	
 	UWorld* World = GetWorld();
 	if (World)
@@ -24,6 +28,7 @@ void UMenu::MenuSetup()
 			InputDataMode.SetWidgetToFocus(TakeWidget());
 			InputDataMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 			PlayerController->SetInputMode(InputDataMode);
+			PlayerController->SetShowMouseCursor(true);
 		}
 	}
 
@@ -36,6 +41,23 @@ void UMenu::MenuSetup()
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
 
+	
+}
+
+void UMenu::MenuTearDown()
+{
+	//removing widget from parent widget
+	RemoveFromParent();
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		//set input mode to game only after tear down menu widget
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		FInputModeGameOnly InputModeData;
+		
+		PlayerController->SetInputMode(InputModeData);
+		PlayerController->SetShowMouseCursor(false);
+	}
 	
 }
 
@@ -54,6 +76,15 @@ bool UMenu::Initialize()
 	
 }
 
+void UMenu::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
+{
+	//this is inherit function from UUserWidget class 
+	//as host button is clicked along with travelling to lobby level , it removes menu widget too
+
+	Super::OnLevelRemovedFromWorld(InLevel, InWorld);
+	MenuTearDown();
+}
+
 void UMenu::HostButtonClicked()
 {
 	if (GEngine)
@@ -64,7 +95,7 @@ void UMenu::HostButtonClicked()
 	//on host button clicked, create session and travel to lobby level
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(4, FString("FreeForAll"));
+		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType);
 
 		UWorld* World = GetWorld();
 		if (World)
