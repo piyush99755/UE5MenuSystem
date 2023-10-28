@@ -60,7 +60,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 
 		//broadcast own custom delegate
 		//passing value false when it failed to create session
-		MultiplayerCreateSessionComplete.Broadcast(false);
+		MultiplayerOnCreateSessionComplete.Broadcast(false);
 	}
 	
 	
@@ -91,7 +91,7 @@ void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, b
 		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
 	}
 
-	MultiplayerCreateSessionComplete.Broadcast(bWasSuccessful);
+	MultiplayerOnCreateSessionComplete.Broadcast(bWasSuccessful);
 }
 
 void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
