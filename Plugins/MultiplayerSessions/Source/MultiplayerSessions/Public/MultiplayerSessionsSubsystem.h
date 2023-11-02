@@ -10,11 +10,11 @@
 /**
  * 
  */
-//
+//custom delegates specifically created for menu class
 //Adding own custom delegates that will use to bind callbacks to Menu class
 //
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionsComplete, const TArray<FOnlineSessionSearchResult>& SearchResults, bool bWasSuccessful);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionsComplete, const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
 DECLARE_MULTICAST_DELEGATE_OneParam(FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnDestroySessionComplete, bool, bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnStartSessionComplete, bool, bWasSuccessful);
@@ -60,6 +60,8 @@ private:
 	IOnlineSessionPtr SessionInterface;
 
 	TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
+
+	TSharedPtr<FOnlineSessionSearch> LastSessionSearch;
 
 	//delegates to add to the online session interface delegate list
 	//bind internal callbacks to these
