@@ -18,7 +18,7 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable)
-		void MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch);
+		void MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath);
 
 	UFUNCTION(BlueprintCallable)
 		void MenuTearDown();
@@ -68,6 +68,7 @@ private:
 
 	int32 NumPublicConnections{ 4 };
 	FString MatchType{ TEXT("FreeForAll") };
+	FString PathToLobby{ TEXT("") };
 
 	
 

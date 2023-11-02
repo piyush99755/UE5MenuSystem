@@ -7,8 +7,9 @@
 #include "OnlineSessionSettings.h"
 #include "MultiplayerSessionsSubsystem.h"
 
-void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch)
+void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath = FString("/Game/ThirdPerson/Maps/Lobby"))
 {
+	PathToLobby = FString::Printf(TEXT("%s?listen"), *LobbyPath);
 	NumPublicConnections = NumberOfPublicConnections;
 	MatchType = TypeOfMatch;
 
@@ -109,7 +110,7 @@ void UMenu::OnCreateSession(bool bWasSuccessful)
 		UWorld* World = GetWorld();
 		if (World)
 		{
-			World->ServerTravel(FString("/Game/ThirdPerson/Maps/Lobby?listen"));
+			World->ServerTravel(FString(PathToLobby));
 		}
 	}
 
@@ -119,6 +120,11 @@ void UMenu::OnCreateSession(bool bWasSuccessful)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Session was not created!")));
 		}
+
+
+		//enabling button input
+		HostButton->SetIsEnabled(true);
+		
 	}
 	
 }
@@ -144,6 +150,12 @@ void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResu
 
 
 	}
+
+	//enable join button again only find sessions failed or number of session results is zero
+	if (!bWasSuccessful || SessionResults.Num() == 0)
+	{
+		JoinButton->SetIsEnabled(true);
+	}
 	
 }
 
@@ -167,6 +179,11 @@ void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 		}
 	}
 
+	if (Result != EOnJoinSessionCompleteResult::Success)
+	{
+		JoinButton->SetIsEnabled(true);
+	}
+
 }
 
 void UMenu::OnDestroySession(bool bWasSuccessful)
@@ -179,7 +196,8 @@ void UMenu::OnStartSession(bool bWasSuccessful)
 
 void UMenu::HostButtonClicked()
 {
-	
+	//disable input
+	HostButton->SetIsEnabled(false);
 
 	//on host button clicked, create session and travel to lobby level
 	if (MultiplayerSessionsSubsystem)
@@ -193,6 +211,9 @@ void UMenu::HostButtonClicked()
 
 void UMenu::JoinButtonClicked()
 {
+	//Disable input
+	JoinButton->SetIsEnabled(false);
+
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->FindSessions(10000);
