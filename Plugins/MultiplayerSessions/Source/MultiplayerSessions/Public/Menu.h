@@ -18,7 +18,7 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable)
-		void MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath);
+		void MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath = FString(TEXT("/Game/ThirdPerson/Maps/Lobby")));
 
 	UFUNCTION(BlueprintCallable)
 		void MenuTearDown();
